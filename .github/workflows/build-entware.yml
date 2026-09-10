@@ -1,0 +1,40 @@
+name: Build Entware csqtt-server
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential git python3 python3-pip curl
+
+      - name: Clone Entware buildroot
+        run: |
+          git clone https://github.com/Entware/Entware.git entware
+          cp -r package/csqtt-server entware/package/
+
+      - name: Configure mipsel toolchain
+        run: |
+          cd entware
+          cp configs/mipsel.config .config
+
+      - name: Build csqtt-server package
+        run: |
+          cd entware
+          make package/csqtt-server/compile V=s
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: csqtt-server-mipsel
+          path: entware/bin/mipsel/packages/*.ipk

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    # Восстановление прав (Keenetic их сбрасывает)
+    chmod -R 755 /opt/csqtt
+
+    # Запуск бинарника
+    /opt/csqtt/csqtt-server &
+    ;;
+  stop)
+    killall csqtt-server 2>/dev/null
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+esac
